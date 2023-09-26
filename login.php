@@ -7,21 +7,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM user WHERE username='$username'";
-    $result = mysqli_query($conn, $sql);
+    // 使用参数化查询
+    $sql = "SELECT * FROM user WHERE username=?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result) {
-        $row = mysqli_fetch_assoc($result);
-        if (password_verify($password, $row['password'])) {
-            session_start();
-            $_SESSION['username'] = $username;
-            header("Location: index.php");
-            exit();
+        if (mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            if (password_verify($password, $row['password'])) {
+                session_start();
+                $_SESSION['username'] = $username;
+                header("Location: index.php");
+                exit();
+            } else {
+                $message = "登录失败：密码不正确";
+            }
         } else {
-            $message = "登录失败：密码不正确";
+            $message = "登录失败：用户名不存在";
         }
     } else {
-        $message = "登录失败：用户名不存在";
+        $message = "登录失败：数据库查询失败";
     }
 }
 ?>

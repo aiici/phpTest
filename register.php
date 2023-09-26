@@ -7,12 +7,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO user (username, password) VALUES ('$username', '$password')";
-    
-    if (mysqli_query($conn, $sql)) {
-        $message = "注册成功！";
+    // 首先检查用户名是否已存在
+    $check_sql = "SELECT * FROM user WHERE username=?";
+    $check_stmt = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($check_stmt, "s", $username);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
+
+    if (mysqli_num_rows($check_result) > 0) {
+        $message = "注册失败：用户名已被注册";
     } else {
-        $message = "注册失败：" . mysqli_error($conn);
+        // 如果用户名不存在，则进行插入操作
+        $insert_sql = "INSERT INTO user (username, password) VALUES (?, ?)";
+        $insert_stmt = mysqli_prepare($conn, $insert_sql);
+        mysqli_stmt_bind_param($insert_stmt, "ss", $username, $password);
+
+        if (mysqli_stmt_execute($insert_stmt)) {
+            $message = "注册成功！";
+        } else {
+            $message = "注册失败：" . mysqli_error($conn);
+        }
     }
 }
 ?>
