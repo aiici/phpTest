@@ -12,8 +12,8 @@
 
 ###### 登录/注册
 
-![image-20230926155221851]()
+![image-20230926155221851](https://github.com/aiici/phpTest/tree/main/img/image-20230926155221851.png)
 
 ###### 主页视图
 
-([phpTest/js at main · aiici/phpTest (github.com)](https://github.com/aiici/phpTest/tree/main/img/image-20230926155427248.png)
+![image-2023092615542724](https://github.com/aiici/phpTest/tree/main/img/image-20230926155427248.png)
