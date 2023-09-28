@@ -38,7 +38,7 @@ if (isset($_POST['keyword'])) {
 }
 
 // 分页逻辑
-$results_per_page = 10; // 每页显示的结果数量
+$results_per_page = 20; // 每页显示的结果数量
 $total_results = count($data); // 总结果数量
 $total_pages = ceil($total_results / $results_per_page); // 总页数
 
@@ -101,7 +101,7 @@ $end_index = $start_index + $results_per_page;
                 <thead>
                     <tr>
                         <th>歌名</th>
-                        <th>评价</th>
+                        <th>地址</th>
                         <th>歌手</th>
                         <th>存入时间</th>
                         <th>点赞数</th>
@@ -112,7 +112,7 @@ $end_index = $start_index + $results_per_page;
                         <?php if ($i < count($data)): ?>
                             <tr>
                                 <td><?php echo $data[$i]['title']; ?></td>
-                                <td><?php echo $data[$i]['artist']; ?></td>
+                                <td><?php echo $data[$i]['addr']; ?></td>
                                 <td><?php echo $data[$i]['genre']; ?></td>
                                 <td><?php echo $data[$i]['release_date']; ?></td>
                                 <td><?php echo $data[$i]['popularity']; ?></td>

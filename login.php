@@ -19,9 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = mysqli_fetch_assoc($result);
             if (password_verify($password, $row['password'])) {
                 session_start();
-                $_SESSION['username'] = $username;
-                header("Location: index.php");
-                exit();
+                $_SESSION['username'] = $username; // 将用户名保存在会话中
+
+                // 检查用户名是否为 "admin"，如果是，则重定向到 admin.php
+                if ($username == "admin") {
+                    header("Location: admin.php");
+                    exit();
+                } else {
+                    header("Location: index.php");
+                    exit();
+                }
             } else {
                 $message = "登录失败：密码不正确";
             }
@@ -33,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>

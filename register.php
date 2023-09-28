@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "注册失败：用户名已被注册";
     } else {
         // 如果用户名不存在，则进行插入操作
-        $insert_sql = "INSERT INTO user (username, password) VALUES (?, ?)";
+        $insert_sql = "INSERT INTO user (username, password,status) VALUES (?, ?, 1)";
         $insert_stmt = mysqli_prepare($conn, $insert_sql);
         mysqli_stmt_bind_param($insert_stmt, "ss", $username, $password);
 
