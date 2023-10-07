@@ -12,7 +12,19 @@
 
 ###### 登录/注册
 
-![show1](img/image-20230926155221851.png)
+![show1](img/login.png)
 ###### 主页视图
 
-![show2](img/image-20230926155427248.png)
+![show2](img/index.jpg)
+
+###### 后台管理
+
+![show1](img/admin.png)
+
+###### 歌曲管理
+
+![show1](img/musicadmin.jpg)
+
+###### 用户管理
+
+![show1](img/useradmin.jpg)

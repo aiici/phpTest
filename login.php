@@ -17,20 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result) {
         if (mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
-            if (password_verify($password, $row['password'])) {
-                session_start();
-                $_SESSION['username'] = $username; // 将用户名保存在会话中
+            if ($row['status'] == 1) {
+                if (password_verify($password, $row['password'])) {
+                    session_start();
+                    $_SESSION['username'] = $username; // 将用户名保存在会话中
 
-                // 检查用户名是否为 "admin"，如果是，则重定向到 admin.php
-                if ($username == "admin") {
-                    header("Location: admin.php");
-                    exit();
+                    // 检查用户名是否为 "admin"，如果是，则重定向到 admin.php
+                    if ($username == "admin") {
+                        header("Location: admin.php");
+                        exit();
+                    } else {
+                        header("Location: index.php");
+                        exit();
+                    }
                 } else {
-                    header("Location: index.php");
-                    exit();
+                    $message = "登录失败：密码不正确";
                 }
-            } else {
-                $message = "登录失败：密码不正确";
+            } elseif ($row['status'] == 2) {
+                $message = "登录失败：此账号被禁用";
             }
         } else {
             $message = "登录失败：用户名不存在";

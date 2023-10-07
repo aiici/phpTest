@@ -38,7 +38,7 @@ if (isset($_POST['keyword'])) {
 }
 
 // 分页逻辑
-$results_per_page = 20; // 每页显示的结果数量
+$results_per_page = 15; // 每页显示的结果数量
 $total_results = count($data); // 总结果数量
 $total_pages = ceil($total_results / $results_per_page); // 总页数
 

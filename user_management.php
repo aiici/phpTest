@@ -14,8 +14,8 @@ $itemsPerPage = 10;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($page - 1) * $itemsPerPage;
 
-// 查询user表的数据，仅包括状态为1（启用）的用户
-$sql = "SELECT * FROM user WHERE status = 1 LIMIT $offset, $itemsPerPage";
+// 查询user表的数据，包括状态为1（启用）和2（禁用）的用户
+$sql = "SELECT * FROM user WHERE status IN (1, 2) LIMIT $offset, $itemsPerPage";
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
@@ -27,10 +27,44 @@ $userData = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $userData[] = $row;
 }
+
 if (isset($_POST['logout'])) {
     session_destroy();
     header("Location: login.php");
     exit();
+}
+
+// 处理删除用户、禁用用户和启用用户操作
+if (isset($_POST['delete_user'])) {
+    $userId = $_POST['user_id'];
+    $sql = "DELETE FROM user WHERE user_id = $userId";
+    if (mysqli_query($conn, $sql)) {
+        // 成功删除用户
+        header("Location: user_management.php");
+        exit();
+    } else {
+        echo "删除用户失败: " . mysqli_error($conn);
+    }
+} elseif (isset($_POST['disable_user'])) {
+    $userId = $_POST['user_id'];
+    $sql = "UPDATE user SET status = 2 WHERE user_id = $userId";
+    if (mysqli_query($conn, $sql)) {
+        // 成功禁用用户
+        header("Location: user_management.php");
+        exit();
+    } else {
+        echo "禁用用户失败: " . mysqli_error($conn);
+    }
+} elseif (isset($_POST['enable_user'])) {
+    $userId = $_POST['user_id'];
+    $sql = "UPDATE user SET status = 1 WHERE user_id = $userId";
+    if (mysqli_query($conn, $sql)) {
+        // 成功启用用户
+        header("Location: user_management.php");
+        exit();
+    } else {
+        echo "启用用户失败: " . mysqli_error($conn);
+    }
 }
 ?>
 
@@ -67,7 +101,7 @@ if (isset($_POST['logout'])) {
             margin-left: 270px; 
             padding: 20px;
         }
-        .btn-danger{
+        .btn-danger {
             margin-left: 25px;
         }
     </style>
@@ -96,15 +130,25 @@ if (isset($_POST['logout'])) {
                 <?php foreach ($userData as $user): ?>
                     <tr>
                         <td><?php echo $user['username']; ?></td>
-                        <td>启用</td>
+                        <td>
+                            <?php if ($user['status'] == 1): ?>
+                                启用
+                            <?php elseif ($user['status'] == 2): ?>
+                                禁用
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <form method="POST" style="display: inline;">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" name="delete_user" class="btn btn-danger btn-sm">删除</button>
+                                <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
+                                <?php if ($user['status'] == 1): ?>
+                                    <button type="submit" name="disable_user" class="btn btn-warning btn-sm">禁用</button>
+                                <?php elseif ($user['status'] == 2): ?>
+                                    <button type="submit" name="enable_user" class="btn btn-success btn-sm">启用</button>
+                                <?php endif; ?>
                             </form>
                             <form method="POST" style="display: inline;">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" name="disable_user" class="btn btn-warning btn-sm">禁用</button>
+                                <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
+                                <button type="submit" name="delete_user" class="btn btn-danger btn-sm" onclick="return confirm('确认删除吗？')">删除</button>
                             </form>
                         </td>
                     </tr>
@@ -114,7 +158,7 @@ if (isset($_POST['logout'])) {
 
         <!-- 分页链接 -->
         <?php
-        $sql = "SELECT COUNT(*) as total_users FROM user WHERE status = 1";
+        $sql = "SELECT COUNT(*) as total_users FROM user WHERE status IN (1, 2)";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
         $totalUsers = $row['total_users'];

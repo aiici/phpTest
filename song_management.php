@@ -9,6 +9,21 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
 
 include('db.php');
 
+$successMessage = '';
+$errorMessage = '';
+
+if (isset($_POST['delete_song'])) {
+    $id = $_POST['id'];
+    $deleteSql = "DELETE FROM search_data WHERE data_id = $id";
+    $deleteResult = mysqli_query($conn, $deleteSql);
+
+    if ($deleteResult) {
+        $successMessage = '删除成功！';
+    } else {
+        $errorMessage = '删除失败：' . mysqli_error($conn);
+    }
+}
+
 // 分页参数
 $itemsPerPage = 10;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -101,9 +116,10 @@ if (isset($_POST['logout'])) {
                         <td><?php echo $data['title']; ?></td>
                         <td><?php echo $data['addr']; ?></td>
                         <td>
-                            <a href="edit_song.php?id=<?php echo $data['id']; ?>" class="btn btn-primary btn-sm">修改</a>
+                            <!-- 在“修改”按钮链接中添加id参数 -->
+                            <a href="edit_song.php?id=<?php echo $data['data_id']; ?>" class="btn btn-primary btn-sm">修改</a>
                             <form method="POST" style="display: inline;">
-                                <input type="hidden" name="id" value="<?php echo $data['id']; ?>">
+                                <input type="hidden" name="id" value="<?php echo $data['data_id']; ?>">
                                 <button type="submit" name="delete_song" class="btn btn-danger btn-sm">删除</button>
                             </form>
                         </td>
